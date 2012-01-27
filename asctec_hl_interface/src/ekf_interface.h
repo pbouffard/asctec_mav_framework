@@ -55,7 +55,7 @@ private:
   void stateCallback(const asctec_hl_comm::mav_ekfConstPtr & msg);
 
 public:
-  EKFInterface(ros::NodeHandle & nh, CommPtr & comm);
+  EKFInterface(ros::NodeHandle & nh, ros::NodeHandle & pnh, CommPtr & comm);
 };
 
 

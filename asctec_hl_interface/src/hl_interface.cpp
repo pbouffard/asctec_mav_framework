@@ -32,8 +32,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "hl_interface.h"
 #include "helper.h"
 
-HLInterface::HLInterface(ros::NodeHandle & nh, CommPtr & comm) :
-  nh_(nh), pnh_("~"), comm_(comm), diag_updater_(),
+HLInterface::HLInterface(ros::NodeHandle & nh, ros::NodeHandle& pnh, CommPtr & comm) :
+  nh_(nh), pnh_(pnh), comm_(comm), diag_updater_(),
       diag_imu_freq_(diagnostic_updater::FrequencyStatusParam(&diag_imu_freq_min_, &diag_imu_freq_max_, 0, 5))
 {
   pnh_.param("frame_id", frame_id_, std::string("fcu"));

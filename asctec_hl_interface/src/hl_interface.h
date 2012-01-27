@@ -32,6 +32,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef ASCTECINTERFACE_H_
 #define ASCTECINTERFACE_H_
 
+#include <boost/shared_ptr.hpp>
+
 #include <ros/ros.h>
 #include <tf/transform_datatypes.h>
 #include "comm.h"
@@ -61,6 +63,9 @@ typedef dynamic_reconfigure::Server<asctec_hl_interface::HLInterfaceConfig> Reco
  * This class provides basic access to the HighLevel Processor of the AutoPilot Board. It subscribes to position / velocity / acceleration commands, publishes IMU, GPS, RC and status data and synchronizes the HL Processor time with the host computer.
  * HighLevel Processor and LowLevel Processor of the AscTec AutoPilot board are referenced to HLP and LLP in the following.
  */
+
+class HLInterface;
+typedef boost::shared_ptr<HLInterface> HLInterfacePtr;
 
 class HLInterface
 {
@@ -161,7 +166,7 @@ private:
   void diagnostic(diagnostic_updater::DiagnosticStatusWrapper & stat);
 
 public:
-  HLInterface(ros::NodeHandle & nh, CommPtr & comm);
+  HLInterface(ros::NodeHandle & nh, ros::NodeHandle & pnh, CommPtr & comm);
   ~HLInterface();
 };
 

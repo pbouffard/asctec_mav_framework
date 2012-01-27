@@ -33,16 +33,16 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "helper.h"
 #include <asctec_hl_comm/mav_ctrl.h>
 
-SSDKInterface::SSDKInterface(ros::NodeHandle & nh, CommPtr & comm):
+SSDKInterface::SSDKInterface(ros::NodeHandle & nh, ros::NodeHandle & pnh, CommPtr & comm):
   nh_(nh),
-  pnh_("~/ssdk"),
+  pnh_(pnh),
   comm_(comm),
   have_config_(false)
 {
-  ros::NodeHandle _pnh("~");
-  _pnh.param("frame_id", frame_id_, std::string("fcu"));
+  //ros::NodeHandle _pnh("~");
+  pnh_.param("frame_id", frame_id_, std::string("fcu"));
 
-  ROS_WARN_COND(!pnh_.hasParam("omega_0_xy"), "no ssdk parameters available, position control on the HLP will not work!");
+  ROS_WARN_COND(!pnh_.hasParam("ssdk/omega_0_xy"), "no ssdk parameters available, position control on the HLP will not work!");
 
   pose_sub_ = nh_.subscribe("pose", 1, &SSDKInterface::cbPose, this);
   state_sub_ = nh_.subscribe("state", 1, &SSDKInterface::cbState, this);

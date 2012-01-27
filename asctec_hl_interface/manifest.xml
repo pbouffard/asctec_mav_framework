@@ -17,10 +17,14 @@
   <depend package="asctec_hl_comm"/>
   <depend package="actionlib" />
   <depend package="diagnostic_updater" />
+  <depend package="nodelet" />
+  <depend package="pluginlib" />
   
   <export>
     <rosdoc config="rosdoc.yaml" />
+    <nodelet plugin="${prefix}/nodelets.xml"/>
   </export>
+  
 
 </package>
 

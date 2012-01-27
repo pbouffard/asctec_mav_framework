@@ -33,8 +33,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <tf/tf.h>
 #include "helper.h"
 
-EKFInterface::EKFInterface(ros::NodeHandle & nh, CommPtr & comm) :
-  nh_(nh), pnh_("~"), comm_(comm)
+EKFInterface::EKFInterface(ros::NodeHandle & nh, ros::NodeHandle & pnh, CommPtr & comm) :
+  nh_(nh), pnh_(pnh), comm_(comm)
 {
   state_pub_ = nh.advertise<asctec_hl_comm::mav_ekf> ("ekf_state_out", 1);
   state_sub_ = nh.subscribe("ekf_state_in", 1, &EKFInterface::stateCallback, this);
@@ -97,7 +97,7 @@ void EKFInterface::stateCallback(const asctec_hl_comm::mav_ekfConstPtr & msg)
 
   if (msg->state.size() != HLI_EKF_STATE_SIZE)
   {
-    ROS_WARN("size of incoming state (%d) != size of state in the HL processor (%d), not sending!", msg->state.size(), HLI_EKF_STATE_SIZE);
+    ROS_WARN("size of incoming state (%d) != size of state in the HL processor (%d), not sending!", int(msg->state.size()), HLI_EKF_STATE_SIZE);
     return;
   }
 

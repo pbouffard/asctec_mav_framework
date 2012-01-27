@@ -32,16 +32,32 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "comm.h"
 #include <ros/ros.h>
 
-Comm::Comm() :
-  rx_timeout_(uart_service_), rx_timeout_occurred_(false), rx_state_(1), TX_HEADER_SIZE(6)// 3 preamble + size + type + flag
+Comm::Comm() : TX_HEADER_SIZE(6)
 {
+}
+
+// not really sure why (or even if) the following is required but it seems to
+// allow the shared pointer to get created
+Comm::Comm(const Comm& _alloc) : TX_HEADER_SIZE(6)
+{
+}
+
+void Comm::Init()
+{
+  rx_timeout_ = new boost::asio::deadline_timer(uart_service_);
+  rx_timeout_occurred_ = false;
+  rx_state_ = 1;
+  //TX_HEADER_SIZE = 6;
   rx_packet_cnt_ = 0;
   rx_packet_good_cnt_ = 0;
   registerCallback(HLI_PACKET_ID_ACK, &Comm::processPacketAck, this);
   tx_buffer_[0] = '>';
   tx_buffer_[1] = '*';
   tx_buffer_[2] = '>';
+
+
 }
+
 
 Comm::~Comm()
 {
@@ -152,7 +168,7 @@ bool Comm::configurePort(SerialPortPtr & serial_port, uint32_t * baudrate)
 }
 
 void Comm::close(){
-  uart_service_.post(boost::bind(&boost::asio::deadline_timer::cancel, &rx_timeout_));
+  uart_service_.post(boost::bind(&boost::asio::deadline_timer::cancel, &(*rx_timeout_)));
   uart_service_.post(boost::bind(&boost::asio::serial_port::close, port_rx_));
   if (port_rx_name_ != port_tx_name_)
     uart_service_.post(boost::bind(&boost::asio::serial_port::close, port_tx_));
@@ -174,8 +190,8 @@ void Comm::rxReadStart(uint32_t length, uint32_t timeout)
 
   if (timeout != 0)
   {
-    rx_timeout_.expires_from_now(boost::posix_time::milliseconds(timeout));
-    rx_timeout_.async_wait(boost::bind(&Comm::rxTimeoutCallback, this, boost::asio::placeholders::error));
+    rx_timeout_->expires_from_now(boost::posix_time::milliseconds(timeout));
+    rx_timeout_->async_wait(boost::bind(&Comm::rxTimeoutCallback, this, boost::asio::placeholders::error));
   }
 }
 
@@ -227,7 +243,7 @@ void Comm::rxReadCallback(const boost::system::error_code& error, size_t bytes_t
     return;
   }
 
-  rx_timeout_.cancel();
+  rx_timeout_->cancel();
 
   if (rx_state_ == 1)
   {

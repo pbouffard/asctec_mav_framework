@@ -69,7 +69,8 @@ private:
   SerialPortPtr port_rx_;
   SerialPortPtr port_tx_;
   boost::asio::io_service uart_service_;
-  boost::asio::deadline_timer rx_timeout_;
+  //boost::asio::deadline_timer rx_timeout_;
+  boost::asio::deadline_timer* rx_timeout_;
   bool rx_timeout_occurred_;
   boost::thread uart_thread_[2];
 
@@ -111,6 +112,12 @@ public:
   Comm();
 //  Comm(const std::string & port, uint32_t baudrate);
   ~Comm();
+
+  Comm(const Comm& _alloc);
+
+  void Init();
+
+
 
   /// connects to the specified serial port(s) with the given baudrate. The HLP sets it's baudrate automatically.
   /**

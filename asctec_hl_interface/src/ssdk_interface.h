@@ -98,7 +98,7 @@ private:
   void cbSSDKConfig(asctec_hl_interface::SSDKConfig & config, uint32_t level);
 
 public:
-  SSDKInterface(ros::NodeHandle & nh, CommPtr & comm);
+  SSDKInterface(ros::NodeHandle & nh, ros::NodeHandle & pnh, CommPtr & comm);
   ~SSDKInterface();
 };
 

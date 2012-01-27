@@ -1,0 +1,10 @@
+<library path="lib/libasctec_hl_interface">
+  <class name="asctec_hl_interface/HLInterfaceNodelet" 
+         type="asctec_hl_interface::HLInterfaceNodelet" 
+         base_class_type="nodelet::Nodelet">
+    <description>
+      Nodelet version of asctec_hl_interface
+    </description>
+  </class>
+
+</library>

@@ -1,0 +1,13 @@
+<launch>
+    <arg name="nodelet_manager" default="manager"/>
+    <arg name="machine" default="" />
+    <node name="fcu" pkg="nodelet" type="nodelet" 
+          args="load asctec_hl_interface/HLInterfaceNodelet $(arg nodelet_manager)"
+          clear_params="true"
+          machine="$(arg machine)">
+    </node>
+    <group ns="fcu">
+		<rosparam file="$(find asctec_hl_interface)/launch/fcu_parameters.yaml" />
+        <rosparam file="$(find asctec_hl_interface)/launch/ssdk_parameters.yaml" />        
+    </group>
+</launch>
