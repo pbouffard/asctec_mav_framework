@@ -23,4 +23,5 @@ asctec_hl_interface/cfg/hl_interface.cfgc
 asctec_hl_interface/cfg/ssdk.cfgc
 asctec_hl_interface/docs/
 asctec_hl_interface/src/asctec_hl_interface/
-
+*.so
+.settings
