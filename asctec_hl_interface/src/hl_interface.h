@@ -45,6 +45,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <asctec_hl_comm/mav_status.h>
 #include <sensor_msgs/Imu.h>
 #include <sensor_msgs/NavSatFix.h>
+#include <sensor_msgs/Joy.h>
 
 // service includes
 #include <asctec_hl_comm/MavCtrlSrv.h>
@@ -82,6 +83,7 @@ private:
   ros::Publisher imu_pub_; ///< publisher for custom asctec_hl_comm/mav_imu message
   ros::Publisher rc_pub_;
   ros::Publisher status_pub_;
+  ros::Publisher joy_pub_;
   ros::Subscriber control_sub_;
 
   ros::ServiceServer motor_srv_;
@@ -152,6 +154,7 @@ private:
    */
   int k_stick_yaw_;
 
+  bool publish_joystick_; // Whether to publish RC data as a sensor_msgs/Joy message
 
   // dynamic reconfigure
   ReconfigureServer *reconf_srv_;

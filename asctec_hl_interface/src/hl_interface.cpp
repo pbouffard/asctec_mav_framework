@@ -32,6 +32,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "hl_interface.h"
 #include "helper.h"
 
+using helper::clamp;
+
 HLInterface::HLInterface(ros::NodeHandle & nh, ros::NodeHandle& pnh, CommPtr & comm) :
   nh_(nh), pnh_(pnh), comm_(comm), diag_updater_(),
       diag_imu_freq_(diagnostic_updater::FrequencyStatusParam(&diag_imu_freq_min_, &diag_imu_freq_max_, 0, 5))
@@ -41,6 +43,7 @@ HLInterface::HLInterface(ros::NodeHandle & nh, ros::NodeHandle& pnh, CommPtr & c
   pnh_.param("k_stick_yaw", k_stick_yaw_, 120);
   pnh_.param("stddev_angular_velocity", angular_velocity_variance_, 0.013); // taken from experiments
   pnh_.param("stddev_linear_acceleration", linear_acceleration_variance_, 0.083); // taken from experiments
+  pnh_.param("publish_joystick", publish_joystick_, false);
   angular_velocity_variance_ *= angular_velocity_variance_;
   linear_acceleration_variance_ *= linear_acceleration_variance_;
 
@@ -49,6 +52,8 @@ HLInterface::HLInterface(ros::NodeHandle & nh, ros::NodeHandle& pnh, CommPtr & c
   gps_pub_ = nh_.advertise<sensor_msgs::NavSatFix> ("gps", 1);
   rc_pub_ = nh_.advertise<asctec_hl_comm::mav_rcdata> ("rcdata", 1);
   status_pub_ = nh_.advertise<asctec_hl_comm::mav_status> ("status", 1);
+  if (publish_joystick_)
+    joy_pub_ = nh_.advertise<sensor_msgs::Joy>("joy", 1);
 
   control_sub_ = nh_.subscribe("control", 1, &HLInterface::controlCmdCallback, this);
 
@@ -203,6 +208,22 @@ void HLInterface::processRcData(uint8_t * buf, uint32_t bufLength)
 
   seq++;
   rc_pub_.publish(msg);
+
+  if (publish_joystick_)
+  {
+    sensor_msgs::JoyPtr joy_msg(new sensor_msgs::Joy);
+    joy_msg->header.stamp = msg->header.stamp;
+
+    joy_msg->axes.resize(4); // roll, pitch, yaw, alt
+    //joy_msg->buttons.resize(1); // serial_enable seems to be the only switch that is readable and it's not useful to us
+    //bool clamped;
+    joy_msg->axes[0] = clamp(-1.0, 1.0, double(data->channel[1]-2048)/2048); // roll +1 = full left, -1 = full right
+    joy_msg->axes[1] = clamp(-1.0, 1.0, double(data->channel[0]-2048)/2048); // pitch +1 = full fwd, -1 = full back
+    joy_msg->axes[2] = clamp(-1.0, 1.0, double(data->channel[3]-2048)/2048); // yaw +1 = full left, -1 = full right
+    joy_msg->axes[3] = clamp(-1.0, 1.0, double(data->channel[2]-2048)/2048); // alt +1 = full up, -1 = full down
+    joy_pub_.publish(joy_msg);
+  }
+
 }
 
 void HLInterface::processStatusData(uint8_t * buf, uint32_t bufLength)

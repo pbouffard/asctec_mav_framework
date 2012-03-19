@@ -11,3 +11,4 @@ max_velocity_z:         0.5
 
 state_estimation:       off
 position_control:       off
+publish_joystick:       true
