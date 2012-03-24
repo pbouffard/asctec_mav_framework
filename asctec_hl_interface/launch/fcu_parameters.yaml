@@ -8,6 +8,7 @@ packet_rate_ssdk_debug: 10.0
 packet_rate_ekf_state:  0.0
 max_velocity_xy:        0.5
 max_velocity_z:         0.5
+max_velocity_yaw:       6.28
 
 state_estimation:       off
 position_control:       off
